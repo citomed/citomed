@@ -1,0 +1,58 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+    @font-face {
+        font-family: 'SFProText-Bold';
+        font-style: bold;
+        font-weight: 800;
+        font-display: swap;
+        src: url("../public/fonts/SFProText-Bold.woff2") format('woff2');
+    }
+
+    @font-face {
+        font-family: 'SFProText-Light';
+        font-style: light;
+        font-weight: 200;
+        font-display: swap;
+        src: url("../public/fonts/SFProText-Light.woff2") format('woff2');
+    }
+
+    @font-face {
+        font-family: 'SFProText-Medium';
+        font-style: medium;
+        font-weight: 500;
+        font-display: swap;
+        src: url("../public/fonts/SFProText-Medium.woff2") format('woff2');
+    }
+
+    @font-face {
+        font-family: 'SFProText-Regular';
+        font-style: regular;
+        font-weight: 300;
+        font-display: swap;
+        src: url("../public/fonts/SFProText-Regular.woff2") format('woff2');
+    }
+
+    @font-face {
+        font-family: 'SFProText-Semibold';
+        font-style: semibold;
+        font-weight: 600;
+        font-display: swap;
+        src: url("../public/fonts/SFProText-Semibold.woff2") format('woff2');
+    }
+
+    @font-face {
+        font-family: 'Montserrat';
+        font-style: semibold;
+        font-weight: 600;
+        font-display: swap;
+        src: url("../public/fonts/Montserrat/Montserrat-SemiBold.woff2") format('woff2');
+    }
+}
+
+
+body {
+    font-family: "SFProText-Regular", Arial, sans-serif;
+}

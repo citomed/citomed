@@ -1,0 +1,75 @@
+import {
+  fetchData,
+  fetchTranslations,
+} from "@/app/(components)/fetchData/fetchData";
+import Footer from "@/app/(components)/Layout/Footer/Footer";
+import Header from "@/app/(components)/Layout/Header/Header";
+import Outpatient from "@/app/(components)/Pages/Outpatient/Outpatient";
+
+const getData = async (params) => {
+  const translate = await fetchTranslations(params?.code);
+  const category2 = await fetchData(
+    params?.code,
+    `s/cats/${params?.id}/${params?.slug}`
+  );
+  const meta_title = category2?.parent_title;
+  const meta_description = category2?.parent_text;
+
+  return { translate, category2, meta_title, meta_description };
+};
+
+export async function generateMetadata({ params }) {
+  const data = await fetchData(params?.code, "settings");
+  const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
+  const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
+  const logoUrl = `${pictureBaseUrl}/${data?.logo}`;
+  const faviconUrl = `${pictureBaseUrl}/${data?.favicon}`;
+  const { meta_title, meta_description } = await getData(params);
+  const stripHTML = (html) => html?.replace(/<[^>]*>/g, "").trim();
+  return {
+    title: `${data?.title} - ${meta_title}`,
+    description: stripHTML(meta_description),
+    icons: {
+      icon: faviconUrl, // Dinamik favicon URL-i
+      apple: faviconUrl, // Əgər apple-touch-icon da eynidirsə
+    },
+    openGraph: {
+      title: `${data?.title} - ${meta_title}`,
+      description: stripHTML(meta_description),
+      url: baseUrl,
+      siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
+      images: [
+        {
+          url: logoUrl, // Dinamik logo URL-i
+          secure_url: logoUrl, // Dinamik logo URL-i
+          width: 600,
+          height: 600,
+        },
+      ],
+    },
+  };
+}
+
+export default async function page({ params }) {
+  const { translate, category2 } = await getData(params);
+  return (
+    <>
+      <Header translate={translate} params={params?.code} />
+      <Outpatient
+        params={params?.code}
+        all_data={category2}
+        noData={translate?.noData}
+        see_more={translate?.see_more}
+      />
+      <Footer
+        reserved={translate?.reserved}
+        params={params?.code}
+        footer_card_1={translate?.section_3_text_1}
+        footer_card_2={translate?.section_3_text_2}
+        footer_card_3={translate?.footer_card3}
+        linkName={"chekcups"}
+        slug={`s/cats/${params?.id}/${params?.slug}`}
+      />
+    </>
+  );
+}

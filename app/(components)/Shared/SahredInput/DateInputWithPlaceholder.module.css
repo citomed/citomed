@@ -1,0 +1,34 @@
+.inputGroup {
+    margin-bottom: 1rem;
+    display: flex;
+    flex-direction: column;
+}
+
+
+.dateInput {
+    /* padding: 10px 12px; */
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    font-size: 16px;
+
+    width: 100%;
+
+}
+
+/* Text tipində olanda placeholder stilini tətbiq etmək üçün */
+.dateInput[type="text"]::placeholder {
+    color: #999;
+    opacity: 1;
+    /* Bəzi brauzerlər üçün */
+}
+
+/* Fokusda olan input üçün (istəyə bağlı) */
+.dateInput:focus {
+    border-color: #007bff;
+    outline: none;
+    box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.dateInput:focus .icon_date {
+    display: none;
+}
