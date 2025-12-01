@@ -1,5 +1,6 @@
 import {
   fetchData,
+  fetchData2,
   fetchTranslations,
 } from "@/app/(components)/fetchData/fetchData";
 import Footer from "@/app/(components)/Layout/Footer/Footer";
@@ -9,11 +10,19 @@ import Popup from "@/app/(components)/Popup/Popup";
 
 const getData = async (params) => {
   const main = await fetchData(params?.code, "main_page");
+  const home_sections = await fetchData2("home_sections");
   const popup = await fetchData(params?.code, "popup");
   const settings = await fetchData(params?.code, "settings");
   const translate = await fetchTranslations(params?.code);
   const translate_home_page = translate?.home_page;
-  return { main, popup, translate, translate_home_page, settings };
+  return {
+    main,
+    popup,
+    translate,
+    translate_home_page,
+    settings,
+    home_sections,
+  };
 };
 
 export async function generateMetadata({ params }) {
@@ -49,7 +58,9 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function page({ params }) {
-  const { main, translate, popup, settings } = await getData(params);
+  const { main, translate, popup, settings, home_sections } = await getData(
+    params
+  );
   return (
     <>
       <Header params={params?.code} translate={translate} />
@@ -64,6 +75,7 @@ export default async function page({ params }) {
         home_doctor_text_2={translate?.home_doctor_text_2}
         all_btn={translate?.all}
         data_xestelikler={main?.xestelikler}
+        home_sections={home_sections}
       />
       <Footer
         settings={settings}

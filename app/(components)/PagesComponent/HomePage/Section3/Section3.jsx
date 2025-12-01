@@ -1,9 +1,9 @@
 import Section from "@/app/(components)/ChildComponent/Section/Section";
 import SharedReklam from "@/app/(components)/Shared/SahredReklam/SharedReklam";
 
-const Section3 = ({ data_translate, params }) => {
+const Section3 = ({ data_translate, params, hid }) => {
   return (
-    <Section ngClass={`bg-[#0d2a68]`}>
+    <Section ngClass={`bg-[#0d2a68] ${hid === 0 ? "mt-[60px]" : "mt-[0px]"}`}>
       <SharedReklam
         linkBg={`bg-[--bg-red] px-[29px] py-[17.5px]`}
         customClass="beforesection relative after:bg-[url('/home/section3/bg.png')] p-20 1xl:px-10 lg:px-4 py-20 mb-20"
