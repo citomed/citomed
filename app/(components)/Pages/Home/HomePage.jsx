@@ -21,7 +21,11 @@ const HomePage = ({
   return (
     <Main>
       {home_sections?.section1 === 1 && (
-        <Section_1 data_sldier={data_sldier} data_insatgram={data_insatgram} />
+        <Section_1
+          ins={home_sections?.ins}
+          data_sldier={data_sldier}
+          data_insatgram={data_insatgram}
+        />
       )}
 
       {home_sections?.section2 === 1 && (

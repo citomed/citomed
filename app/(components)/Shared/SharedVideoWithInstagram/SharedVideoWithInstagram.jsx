@@ -10,15 +10,16 @@ const SharedVideoWithInstagram = ({
   imgInstagram,
   imgClass,
   imageDiv,
+  ins,
 }) => {
+  console.log("ins", ins);
+
   return (
     <>
       <div className="grid grid-cols-12 gap-[24px] h-full ">
         <div
           className={`${
-            imgInstagram?.length > 0
-              ? "col-span-8 md:col-span-12"
-              : "col-span-12"
+            ins === 0 ? "col-span-12" : "col-span-8 md:col-span-12"
           } flex flex-col gap-4 h-full`}
         >
           <Section_1_Video
@@ -37,7 +38,7 @@ const SharedVideoWithInstagram = ({
             />
           )}
         </div>
-        {imgInstagram && (
+        {ins === 1 && (
           <div className="col-span-4 h-full md:col-span-12">
             <SharedInstagram data_instagram={imgInstagram} />
           </div>
