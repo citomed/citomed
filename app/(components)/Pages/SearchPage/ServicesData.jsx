@@ -5,7 +5,7 @@ const ServicesData = ({ data, params }) => {
     <>
       {data &&
         data?.map((cur, i) => (
-          <SearchCard key={i} params={params} link={`s/cats`} cur={cur} />
+          <SearchCard key={i} params={params} link={`servis`} cur={cur} />
         ))}
     </>
   );

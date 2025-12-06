@@ -5,55 +5,72 @@ import {
 import Footer from "@/app/(components)/Layout/Footer/Footer";
 import Header from "@/app/(components)/Layout/Header/Header";
 import DcotorItem from "@/app/(components)/Pages/Doctors/DcotorItem";
+import {
+  generateKeywordsFromWords,
+  stripHTML,
+} from "@/app/(components)/Shared/SharedToSlug/SharedToSlug";
 
-const getData = async (params) => {
-  const data_docs = await fetchData(
-    params?.code,
-    `doctors/${params?.id}/${params?.slug}`
-  );
-  const translate = await fetchTranslations(params?.code);
-  return { data_docs, translate };
+const getData = async (code, id, slug) => {
+  const data_docs = await fetchData(code, `doctors/${id}/${slug}`);
+  const translate = await fetchTranslations(code);
+  const settings = await fetchData(code, "settings");
+  return { data_docs, translate, settings };
 };
 
 export async function generateMetadata({ params }) {
-  const { data_docs } = await getData(params);
-  const data = await fetchData(params?.code, "settings");
-  const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
-  const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
-  const logoUrl = `${pictureBaseUrl}/${data_docs?.data?.file}`;
-  const faviconUrl = `${pictureBaseUrl}/${data?.favicon}`;
-  const stripHTML = (html) => html?.replace(/<[^>]*>/g, "").trim();
-  return {
-    title: `${data?.title} - ${data_docs?.data?.title}`,
-    description: stripHTML(data_docs?.data?.text1),
-    icons: {
-      icon: faviconUrl,
-      apple: faviconUrl,
-    },
-    openGraph: {
-      title: `${data?.title} - ${data_docs?.data?.title}`,
+  try {
+    const { code, id, slug } = await params;
+    const { data_docs, settings } = await getData(code, id, slug);
+    const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
+    const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
+    const logoUrl = `${pictureBaseUrl}/${data_docs?.data?.file}`;
+    const faviconUrl = `${pictureBaseUrl}/${settings?.favicon}`;
+    const generatedKeywords = generateKeywordsFromWords(data_docs?.data?.text1);
+
+    return {
+      title: `${settings?.title} - ${data_docs?.data?.title}`,
       description: stripHTML(data_docs?.data?.text1),
-      url: baseUrl,
-      siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
-      images: [
-        {
-          url: logoUrl,
-          secure_url: logoUrl,
-          width: 600,
-          height: 600,
-        },
-      ],
-    },
-  };
+      keywords: generatedKeywords,
+      icons: {
+        icon: faviconUrl,
+        apple: faviconUrl,
+      },
+      openGraph: {
+        title: `${settings?.title} - ${data_docs?.data?.title}`,
+        description: stripHTML(data_docs?.data?.text1),
+        keywords: generatedKeywords,
+        url: `${baseUrl}`,
+        siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
+        type: "website",
+        image: logoUrl,
+        images: [
+          {
+            url: logoUrl,
+            secure_url: logoUrl,
+            width: 600,
+            height: 600,
+            type: "image/png",
+            alt: settings?.title,
+          },
+        ],
+      },
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      return new Response(error.message, { status: 500 });
+    }
+    return new Response("Internal Server Error", { status: 500 });
+  }
 }
 
 export default async function page({ params }) {
-  const { translate, data_docs } = await getData(params);
+  const { code, id, slug } = await params;
+  const { translate, data_docs } = await getData(code, id, slug);
   return (
     <>
-      <Header params={params?.code} translate={translate} />
+      <Header params={code} translate={translate} />
       <DcotorItem
-        params={params?.code}
+        params={code}
         data={data_docs?.data}
         education={translate?.education}
         treatment_directions={translate?.treatment_directions}
@@ -79,7 +96,7 @@ export default async function page({ params }) {
         swal_error_1={translate?.swal_error_1}
         tr_doctors_long={translate?.doctors_long}
       />
-      <Footer params={params?.code} reserved={translate?.reserved} />
+      <Footer params={code} reserved={translate?.reserved} />
     </>
   );
 }

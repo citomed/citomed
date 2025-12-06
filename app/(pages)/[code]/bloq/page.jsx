@@ -6,60 +6,78 @@ import Footer from "@/app/(components)/Layout/Footer/Footer";
 import Header from "@/app/(components)/Layout/Header/Header";
 import Blog from "@/app/(components)/Pages/Blog/Blog";
 
-const getData = async (params) => {
-  const blogs = await fetchData(params?.code, "blogs");
-  const translate = await fetchTranslations(params?.code);
+const getData = async (code) => {
+  const blogs = await fetchData(code, "blogs");
+  const translate = await fetchTranslations(code);
+  const settings = await fetchData(params?.code, "settings");
   const tr_blogs = translate?.blogs;
   const tr_blogs_long = translate?.blogs_long;
-  return { blogs, translate, tr_blogs, tr_blogs_long };
+  return { blogs, translate, tr_blogs, tr_blogs_long, settings };
 };
 
 export async function generateMetadata({ params }) {
-  const { tr_blogs, tr_blogs_long } = await getData(params);
-  const data = await fetchData(params?.code, "settings");
-  const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
-  const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
-  const logoUrl = `${pictureBaseUrl}/${data?.logo}`;
-  const faviconUrl = `${pictureBaseUrl}/${data?.favicon}`;
+  try {
+    const { code } = await params;
+    const { tr_blogs, tr_blogs_long, settings } = await getData(code);
 
-  return {
-    title: `${data?.title} - ${tr_blogs}`,
-    description: tr_blogs_long,
-    icons: {
-      icon: faviconUrl, // Dinamik favicon URL-i
-      apple: faviconUrl, // Əgər apple-touch-icon da eynidirsə
-    },
-    openGraph: {
-      title: `${data?.title} - ${tr_blogs}`,
+    const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
+    const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
+    const logoUrl = `${pictureBaseUrl}/${settings?.logo}`;
+    const faviconUrl = `${pictureBaseUrl}/${settings?.favicon}`;
+
+    const generatedKeywords = generateKeywordsFromWords(tr_blogs_long);
+
+    return {
+      title: `${settings?.title} - ${tr_blogs}`,
       description: tr_blogs_long,
-      url: baseUrl,
-      siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
-      images: [
-        {
-          url: logoUrl, // Dinamik logo URL-i
-          secure_url: logoUrl, // Dinamik logo URL-i
-          width: 600,
-          height: 600,
-        },
-      ],
-    },
-  };
+      keywords: generatedKeywords,
+      icons: {
+        icon: faviconUrl,
+        apple: faviconUrl,
+      },
+      openGraph: {
+        title: `${settings?.title} - ${tr_blogs}`,
+        description: tr_blogs_long,
+        keywords: generatedKeywords,
+        url: `${baseUrl}`,
+        siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
+        type: "website",
+        image: logoUrl,
+        images: [
+          {
+            url: logoUrl,
+            secure_url: logoUrl,
+            width: 600,
+            height: 600,
+            type: "image/png",
+            alt: settings?.title,
+          },
+        ],
+      },
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      return new Response(error.message, { status: 500 });
+    }
+    return new Response("Internal Server Error", { status: 500 });
+  }
 }
 
 export default async function page({ params }) {
-  const { translate, blogs } = await getData(params);
+  const { code } = await params;
+  const { translate, blogs } = await getData(code);
   return (
     <>
-      <Header translate={translate} params={params?.code} />
+      <Header translate={translate} params={code} />
       <Blog
         tr_blogs={translate?.blogs}
         tr_blogs_long={translate?.blogs_long}
         data={blogs?.data}
-        params={params?.code}
+        params={code}
         read_more={translate?.read_more}
         not_found_blog={translate?.not_found_blog}
       />
-      <Footer params={params?.code} reserved={translate?.reserved} />
+      <Footer params={code} reserved={translate?.reserved} />
     </>
   );
 }

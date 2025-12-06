@@ -51,8 +51,6 @@ const PrivateServiceSingle = ({
     },
   ];
 
-  console.log("data", data);
-
   return (
     <Main>
       <Section ngClass="min-h-screen md:min-h-max md:px-[10px]">

@@ -15,11 +15,15 @@ const Header = ({ params, translate }) => {
   const [searchVisible, setSearchVisible] = useState(false);
 
   const [loading, setLoading] = useState(false);
+
+  // === DÜZƏLİŞ BURADA BAŞLAYIR ===
+  // Menyu linklərindən `params` (dil kodunu) çıxardıq.
+  // DesktopMenu və MobileMenu onsuz da dinamik olaraq bunu əlavə edir.
   const menu = [
     {
       id: 1,
       title: `${translate?.home_page}`,
-      href: `/${params}`,
+      href: `/`, // Sadəcə '/'
       subMenu: null,
     },
     {
@@ -30,28 +34,13 @@ const Header = ({ params, translate }) => {
         {
           id: 1,
           title: `${translate?.about_page}`,
-          href: `/${params}/haqqimizda`,
+          href: `/haqqimizda`, // '/haqqimizda' (params olmadan)
         },
         {
           id: 2,
           title: `${translate?.leaders_address}`,
-          href: `/${params}/rehberin-muracieti`,
+          href: `/rehberin-muracieti`,
         },
-        // {
-        //   id: 3,
-        //   title: `${translate?.certificates}`,
-        //   href: `/${params}/serifikatlar`,
-        // },
-        // {
-        //   id: 4,
-        //   title: `${translate?.recommendation}`,
-        //   href: `/${params}/tovsiye-mektublari`,
-        // },
-        // {
-        //   id: 5,
-        //   title: `${translate?.partners}`,
-        //   href: `/${params}/partnyorlar`,
-        // },
       ],
     },
     {
@@ -62,90 +51,41 @@ const Header = ({ params, translate }) => {
         {
           id: 1,
           title: `${translate?.services}`,
-          href: `/${params}/servisler`,
+          href: `/servisler`,
         },
         {
           id: 2,
           title: `${translate?.privateservives}`,
-          href: `/${params}/ozel-xidmetler`,
+          href: `/ozel-xidmetler`,
         },
         {
           id: 3,
           title: `${translate?.chekcups}`,
-          href: `/${params}/checkaplar`,
+          href: `/checkaplar`,
         },
         {
           id: 4,
           title: `${translate?.laboratory_tests}`,
-          href: `/${params}/laboratoriya-testler`,
+          href: `/laboratoriya-testler`,
         },
       ],
     },
     {
       id: 4,
       title: `${translate?.doctors}`,
-      href: `/${params}/hekimler`,
+      href: `/hekimler`,
       subMenu: null,
     },
-    // {
-    //   id: 5,
-    //   title: `${translate?.media}`,
-    //   href: null,
-    //   subMenu: [
-    //     {
-    //       id: 1,
-    //       title: `${translate?.gallery}`,
-    //       href: `/${params}/qaleriya`,
-    //     },
-
-    //     {
-    //       id: 2,
-    //       title: `${translate?.news}`,
-    //       href: `/${params}/xeberler`,
-    //     },
-    //     {
-    //       id: 3,
-    //       title: `${translate?.blogs}`,
-    //       href: `/${params}/bloq`,
-    //     },
-    //   ],
-    // },
-    // {
-    //   id: 6,
-    //   title: `${translate?.career}`,
-    //   href: `/${params}/karyera`,
-    //   subMenu: null,
-    // },
-    // {
-    //   id: 7,
-    //   title: `${translate?.corporate}`,
-    //   href: null,
-    //   subMenu: [
-    //     {
-    //       id: 1,
-    //       title: `${translate?.franchising}`,
-    //       href: `/${params}/franchayzinq`,
-    //     },
-
-    //     {
-    //       id: 2,
-    //       title: `${translate?.collaboration}`,
-    //       href: `/${params}/emekdasliq`,
-    //     },
-    //     {
-    //       id: 3,
-    //       title: `${translate?.international}`,
-    //       href: `/${params}/beynelxalq-emekdasliq`,
-    //     },
-    //   ],
-    // },
     {
       id: 7,
       title: `${translate?.contact}`,
-      href: `/${params}/elaqe`,
+      href: `/elaqe`,
       subMenu: null,
     },
   ];
+  // === DÜZƏLİŞ BİTDİ ===
+
+  const currentLang = params;
   const [scrolledFromTop, setScrollTop] = useState(false);
   const [openCategory, setOpenCategory] = useState(null);
   const mobileRef = useRef();
@@ -179,7 +119,6 @@ const Header = ({ params, translate }) => {
   const langSwitcher = async () => {
     setOpen(false);
   };
-  // const langs = ["az", "en", "ru"];
   const langs = ["az", "en"];
 
   const langChecker = useCallback((lang = "az") => {
@@ -212,7 +151,6 @@ const Header = ({ params, translate }) => {
 
   useEffect(() => {
     if (searchVisible && searchInputRef.current) {
-      // input görünür olduğunda otomatik focus
       searchInputRef.current.focus();
     }
   }, [searchVisible]);
@@ -230,6 +168,8 @@ const Header = ({ params, translate }) => {
   const router = useRouter();
   const searchParams = useSearchParams();
 
+  // Search üçün URL yaradarkən prefix məntiqini tətbiq etmək lazımdır (əgər lazımsa)
+  // Amma burada fetch URL-də params (dil kodu) lazımdır, o düzdür.
   useEffect(() => {
     const toLowerCase = searchInput.toLocaleLowerCase();
     if (searchInput && searchInput.trim() !== "") {
@@ -262,7 +202,7 @@ const Header = ({ params, translate }) => {
       setBlogs([]);
       setCareer([]);
     }
-  }, [searchInput]);
+  }, [searchInput, params]);
 
   const createQueryString = useCallback(
     (name, value) => {
@@ -276,15 +216,17 @@ const Header = ({ params, translate }) => {
     [searchParams]
   );
 
+  // Search nəticəsində yönləndirmə edərkən URL-i düzəldirik
+  // AZ -> /search/?q=...
+  // EN -> /en/search/?q=...
+  const urlPrefix = params === "az" ? "" : `/${params}`;
+
   const onCodeClose = (e) => {
     if (e.key === "Escape") {
       closeSearch();
     } else if (e.key === "Enter") {
-      // Arama fonksiyonunu çağır (bu zaten router.push içeriyor)
       openSearch();
-      // Ve arama arayüzünü kapat
       closeSearch();
-
       if (e.keyCode === 27) {
         openSearchInput();
         setCategory([]);
@@ -295,20 +237,24 @@ const Header = ({ params, translate }) => {
         setBlogs([]);
         setCareer([]);
       }
-      // Enter tuşuna basıldığında arama sayfasına git ve input'u kapat
     } else if (e.keyCode === 13) {
       openSearchInput();
       const query =
         searchInput !== undefined ? createQueryString("q", searchInput) : "";
-      router.push(`/${params}/search/?${query}`);
+
+      // Router push düzəlişi
+      router.push(`${urlPrefix}/search/?${query}`);
     }
   };
+
   function openSearch() {
     if (!searchInput || searchInput.trim() === "") return;
 
     const query =
       searchInput !== undefined ? createQueryString("q", searchInput) : "";
-    router.push(`/${params}/search/?${query}`);
+
+    // Router push düzəlişi
+    router.push(`${urlPrefix}/search/?${query}`);
   }
 
   const closeSearch = () => {
@@ -323,13 +269,10 @@ const Header = ({ params, translate }) => {
     setCareer([]);
   };
 
-  // Bu fonksiyonu güncelleyin
   function openSearchInput() {
-    // Eğer arama zaten görünür durumdaysa, kapat
     if (searchVisible) {
       closeSearch();
     } else {
-      // Değilse, aç
       setSearchVisible(true);
     }
   }
@@ -345,8 +288,9 @@ const Header = ({ params, translate }) => {
       <Max1200>
         <nav className="grid grid-cols-12 gap-4 lg:flex lg:justify-between lg:items-center">
           <div className="col-span-2  xl:col-span-1 h-full flex justify-center">
+            {/* Logo Linki */}
             <Link
-              href={`/${params}`}
+              href={currentLang === "az" ? "/" : `/${currentLang}`}
               className=" flex justify-center items-center"
             >
               {scrolledFromTop ? (
@@ -380,7 +324,11 @@ const Header = ({ params, translate }) => {
             >
               {!searchVisible ? (
                 <ul className="flex items-center h-full justify-center gap-[14px] lg:hidden w-full transition-opacity duration-300 ease-in-out opacity-100">
-                  <DesktopMenu menu={menu} scrolledFromTop={scrolledFromTop} />
+                  <DesktopMenu
+                    params={params}
+                    menu={menu}
+                    scrolledFromTop={scrolledFromTop}
+                  />
                 </ul>
               ) : null}
 
@@ -459,6 +407,7 @@ const Header = ({ params, translate }) => {
               <MobileMenu
                 openCategory={openCategory}
                 menu={menu}
+                params={params}
                 handleOpen={handleOpen}
                 closeMobileMenu={closeMobileMenu}
               />
@@ -530,7 +479,7 @@ const Header = ({ params, translate }) => {
       </Max1200>
       {searchVisible && (
         <div
-          onClick={closeSearch} // Bu katmana tıklandığında arama kapanır
+          onClick={closeSearch}
           className="fixed top-[120px] left-0 right-0 w-full h-full bg-transparent z-[390]"
         ></div>
       )}

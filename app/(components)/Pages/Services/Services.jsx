@@ -30,7 +30,7 @@ const Services = ({
             <ServicesGrid
               params={params}
               read_more={read_more}
-              services_slug={"s/cats"}
+              services_slug={"servis"}
               services={category}
               customStyle="col-span-4 lg:col-span-6 md:col-span-12"
               ngClass={`mt-[80px] md:mt-[20px] mb-[80px] md:mb-[40px] gap-[24px]`}

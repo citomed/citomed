@@ -5,50 +5,69 @@ import {
 import Footer from "@/app/(components)/Layout/Footer/Footer";
 import Header from "@/app/(components)/Layout/Header/Header";
 import Basket from "@/app/(components)/Pages/Basket/Basket";
+import { generateKeywordsFromWords } from "@/app/(components)/Shared/SharedToSlug/SharedToSlug";
 
-export async function generateMetadata({ params }) {
-  const data = await fetchData(params?.code, "settings");
-  const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
-  const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
-  const logoUrl = `${pictureBaseUrl}/${data?.logo}`;
-  const faviconUrl = `${pictureBaseUrl}/${data?.favicon}`;
-
-  return {
-    title: `${data?.title} - Səbət`,
-    description: data?.description,
-    icons: {
-      icon: faviconUrl, // Dinamik favicon URL-i
-      apple: faviconUrl, // Əgər apple-touch-icon da eynidirsə
-    },
-    openGraph: {
-      title: `${data?.title} - Səbət`,
-      description: data?.meta_description,
-      url: baseUrl,
-      siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
-      images: [
-        {
-          url: logoUrl, // Dinamik logo URL-i
-          secure_url: logoUrl, // Dinamik logo URL-i
-          width: 600,
-          height: 600,
-        },
-      ],
-    },
-  };
-}
-
-const getData = async (params) => {
-  const translate = await fetchTranslations(params?.code);
-  return { translate };
+const getData = async (code) => {
+  const translate = await fetchTranslations(code);
+  const settings = await fetchData(code, "settings");
+  const basket = translate?.baket;
+  return { translate, settings, basket };
 };
 
+export async function generateMetadata({ params }) {
+  try {
+    const { code } = await params;
+    const { basket, settings } = await getData(code);
+    const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
+    const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
+    const logoUrl = `${pictureBaseUrl}/${settings?.logo}`;
+    const faviconUrl = `${pictureBaseUrl}/${settings?.favicon}`;
+    const generatedKeywords = generateKeywordsFromWords(settings?.description);
+
+    return {
+      title: `${settings?.title} - ${basket}`,
+      description: settings?.description,
+      keywords: generatedKeywords,
+      icons: {
+        icon: faviconUrl,
+        apple: faviconUrl,
+      },
+      openGraph: {
+        title: `${settings?.title} - ${basket}`,
+        description: settings?.description,
+        keywords: generatedKeywords,
+        url: `${baseUrl}`,
+        siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
+        type: "website",
+        image: logoUrl,
+        images: [
+          {
+            url: logoUrl,
+            secure_url: logoUrl,
+            width: 600,
+            height: 600,
+            type: "image/png",
+            alt: settings?.title,
+          },
+        ],
+      },
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      return new Response(error.message, { status: 500 });
+    }
+    return new Response("Internal Server Error", { status: 500 });
+  }
+}
+
 export default async function page({ params }) {
-  const { translate } = await getData(params);
+  const { code } = await params;
+  const { translate } = await getData(code);
   return (
     <>
-      <Header params={params?.code} translate={translate} />
+      <Header params={code} translate={translate} />
       <Basket
-        params={params?.code}
+        params={code}
         tr_basket={translate?.baket}
         basket_long={translate?.basket_long}
         private_name={translate?.private_name}
@@ -69,7 +88,7 @@ export default async function page({ params }) {
         swal_error_8={translate?.swal_error_8}
         swal_error_1={translate?.swal_error_1}
       />
-       <Footer params={params?.code} reserved={translate?.reserved} />
+      <Footer params={code} reserved={translate?.reserved} />
     </>
   );
 }

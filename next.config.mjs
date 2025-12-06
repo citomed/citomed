@@ -8,13 +8,7 @@ const nextConfig = {
             pathname: '/storage/**',
         }, ],
     },
-    async redirects() {
-        return [{
-            source: '/',
-            destination: '/az',
-            permanent: true,
-        }, ];
-    },
+
     reactStrictMode: false,
     experimental: {
         optimizePackageImports: ["@chakra-ui/react"],

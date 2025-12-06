@@ -4,7 +4,7 @@ import {
 } from "@/app/(components)/fetchData/fetchData";
 import Footer from "@/app/(components)/Layout/Footer/Footer";
 import Header from "@/app/(components)/Layout/Header/Header";
-import ServicesSingle from "@/app/(components)/Pages/Services/ServicesSingle";
+import Outpatient from "@/app/(components)/Pages/Outpatient/Outpatient";
 import {
   generateKeywordsFromWords,
   stripHTML,
@@ -12,11 +12,11 @@ import {
 
 const getData = async (params) => {
   const translate = await fetchTranslations(params?.code);
-  const settings = await fetchData(params?.code, "settings");
   const category = await fetchData(
     params?.code,
-    `services/${params?.id}/${params?.slug}`
+    `s/cats/${params?.id}/${params?.slug}`
   );
+  const settings = await fetchData(params?.code, "settings");
 
   return { translate, category, settings };
 };
@@ -28,19 +28,19 @@ export async function generateMetadata({ params }) {
     const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
     const logoUrl = `${pictureBaseUrl}/${settings?.logo}`;
     const faviconUrl = `${pictureBaseUrl}/${settings?.favicon}`;
-    const generatedKeywords = generateKeywordsFromWords(settings?.description);
+    const generatedKeywords = generateKeywordsFromWords(category?.parent_text);
 
     return {
-      title: `${settings?.title} - ${category?.item?.title}`,
-      description: stripHTML(category?.item?.short_desc),
+      title: `${settings?.title} - ${category?.parent_title}`,
+      description: stripHTML(category?.parent_text),
       keywords: generatedKeywords,
       icons: {
         icon: faviconUrl,
         apple: faviconUrl,
       },
       openGraph: {
-        title: `${settings?.title} - ${category?.item?.title}`,
-        description: stripHTML(category?.item?.short_desc),
+        title: `${settings?.title} - ${category?.parent_title}`,
+        description: stripHTML(category?.parent_text),
         keywords: generatedKeywords,
         url: `${baseUrl}`,
         siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
@@ -67,20 +67,26 @@ export async function generateMetadata({ params }) {
 }
 
 export default async function page({ params }) {
-  const { translate, category } = await getData(params);
+  const { translate, category, meta_title } = await getData(params);
   return (
     <>
       <Header translate={translate} params={params?.code} />
-      <ServicesSingle
-        data={category}
+      <Outpatient
+        bir={meta_title}
         params={params?.code}
-        all={translate?.all}
+        all_data={category}
+        noData={translate?.noData}
         see_more={translate?.see_more}
-        our_services={translate?.our_services}
-        our_doctors={translate?.our_doctors}
-        treatment_directions={translate?.treatment_directions}
       />
-      <Footer params={params?.code} reserved={translate?.reserved} />
+      <Footer
+        reserved={translate?.reserved}
+        params={params?.code}
+        footer_card_1={translate?.section_3_text_1}
+        footer_card_2={translate?.section_3_text_2}
+        footer_card_3={translate?.footer_card3}
+        linkName={"chekcups"}
+        slug={`servis/${params?.id}/${params?.slug}`}
+      />
     </>
   );
 }

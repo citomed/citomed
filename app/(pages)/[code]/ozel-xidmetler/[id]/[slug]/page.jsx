@@ -5,48 +5,64 @@ import {
 import Footer from "@/app/(components)/Layout/Footer/Footer";
 import Header from "@/app/(components)/Layout/Header/Header";
 import PrivateServiceSingle from "@/app/(components)/Pages/PrivateServices/PrivateServiceSingle";
+import {
+  generateKeywordsFromWords,
+  stripHTML,
+} from "@/app/(components)/Shared/SharedToSlug/SharedToSlug";
 
 const getData = async (params) => {
   const p_slug = await fetchData(
     params?.code,
     `p/${params?.id}/${params?.slug}`
   );
+  const settings = await fetchData(params?.code, "settings");
   const translate = await fetchTranslations(params?.code);
-  return { p_slug, translate };
+  return { p_slug, translate, settings };
 };
 
 export async function generateMetadata({ params }) {
-  const { p_slug } = await getData(params);
-  const data = await fetchData(params?.code, "settings");
-  const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
-  const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
-  const logoUrl = `${pictureBaseUrl}/${data?.logo}`;
-  const faviconUrl = `${pictureBaseUrl}/${data?.favicon}`;
+  try {
+    const { settings, p_slug } = await getData(params);
+    const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
+    const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
+    const logoUrl = `${pictureBaseUrl}/${settings?.logo}`;
+    const faviconUrl = `${pictureBaseUrl}/${settings?.favicon}`;
+    const generatedKeywords = generateKeywordsFromWords(p_slug?.item?.text1);
 
-  const stripHTML = (html) => html?.replace(/<[^>]*>/g, "").trim();
-
-  return {
-    title: `${data?.title}- ${p_slug?.item?.title}`,
-    description: stripHTML(p_slug?.item?.text1),
-    icons: {
-      icon: faviconUrl, // Dinamik favicon URL-i
-      apple: faviconUrl, // Əgər apple-touch-icon da eynidirsə
-    },
-    openGraph: {
-      title: `${data?.title}-${p_slug?.item?.title}`,
+    return {
+      title: `${settings?.title}- ${p_slug?.item?.title}`,
       description: stripHTML(p_slug?.item?.text1),
-      url: baseUrl,
-      siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
-      images: [
-        {
-          url: logoUrl, // Dinamik logo URL-i
-          secure_url: logoUrl, // Dinamik logo URL-i
-          width: 600,
-          height: 600,
-        },
-      ],
-    },
-  };
+      keywords: generatedKeywords,
+      icons: {
+        icon: faviconUrl,
+        apple: faviconUrl,
+      },
+      openGraph: {
+        title: `${settings?.title}- ${p_slug?.item?.title}`,
+        description: stripHTML(p_slug?.item?.text1),
+        keywords: generatedKeywords,
+        url: `${baseUrl}`,
+        siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
+        type: "website",
+        image: logoUrl,
+        images: [
+          {
+            url: logoUrl,
+            secure_url: logoUrl,
+            width: 600,
+            height: 600,
+            type: "image/png",
+            alt: settings?.title,
+          },
+        ],
+      },
+    };
+  } catch (error) {
+    if (error instanceof Error) {
+      return new Response(error.message, { status: 500 });
+    }
+    return new Response("Internal Server Error", { status: 500 });
+  }
 }
 
 export default async function page({ params }) {

@@ -19,7 +19,7 @@ const SharedInstagram = ({ data_instagram }) => {
       }
 
       // Correct date parsing:
-      const [day, month, year] = item.time.split('.');
+      const [day, month, year] = item.time.split(".");
       const expiryDate = new Date(year, month - 1, day); // month - 1 because months are 0-indexed
       const currentDate = new Date();
 
@@ -33,7 +33,6 @@ const SharedInstagram = ({ data_instagram }) => {
 
     setInstagramData(updatedData);
   }, [data_instagram]);
-
 
   return (
     <>
@@ -54,7 +53,7 @@ const SharedInstagram = ({ data_instagram }) => {
               <Link
                 href={`${cur?.link}`}
                 target="_blank"
-                className="flex h-full w-full"
+                className="flex h-full w-full  md:justify-center md:flex md:items-center"
               >
                 <div className="rounded-[13px] overflow-hidden">
                   <Image

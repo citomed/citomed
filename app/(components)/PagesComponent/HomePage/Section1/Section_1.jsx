@@ -15,7 +15,7 @@ const Section_1 = ({ data_sldier, data_insatgram, ins }) => {
           videoLink={`${data_sldier?.link}`}
           text1={`${data_sldier?.text}`}
           imgClass="md:h-[300px]"
-          imageDiv="h-[400px]"
+          imageDiv="h-[400px] md:h-full"
         />
       </Max1200>
     </Section>

@@ -1,3 +1,4 @@
+"use client";
 import Main from "../../ChildComponent/Main/Main";
 import Section from "../../ChildComponent/Section/Section";
 import Max1200 from "../../ChildComponent/Max1200/Max1200";
@@ -7,7 +8,7 @@ import Paragraph from "../../Shared/Paragraph/Paragraph";
 
 import OutpatientCard from "./OutpatientCard";
 
-const Outpatient = ({ all_data, params, see_more, noData }) => {
+const Outpatient = ({ all_data, params, see_more, noData, bir }) => {
   return (
     <Main>
       <Section ngClass="min-h-screen md:min-h-max md:px-[10px]">
