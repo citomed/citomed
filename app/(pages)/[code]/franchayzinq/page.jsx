@@ -65,38 +65,6 @@ export async function generateMetadata({ params }) {
   }
 }
 
-export async function generateMetadata({ params }) {
-  const { meta_title, meta_description, settings } = await getData(params);
-
-  const baseUrl = `${process.env.NEXT_PUBLIC_FAKE_DOMEN}`;
-  const pictureBaseUrl = process.env.NEXT_PUBLIC_PICTURE;
-  const logoUrl = `${pictureBaseUrl}/${settings?.logo}`;
-  const faviconUrl = `${pictureBaseUrl}/${settings?.favicon}`;
-  const stripHTML = (html) => html?.replace(/<[^>]*>/g, "").trim();
-  return {
-    title: `${settings?.title} - ${meta_title}`,
-    description: stripHTML(meta_description),
-    icons: {
-      icon: faviconUrl,
-      apple: faviconUrl,
-    },
-    openGraph: {
-      title: `${settings?.title} - ${meta_title}`,
-      description: stripHTML(meta_description),
-      url: baseUrl,
-      siteName: `${process.env.NEXT_PUBLIC_FAKE_DOMEN_2}`,
-      images: [
-        {
-          url: logoUrl,
-          secure_url: logoUrl,
-          width: 600,
-          height: 600,
-        },
-      ],
-    },
-  };
-}
-
 export default async function page({ params }) {
   const { code } = await params;
   const { translate, franchising } = await getData(code);
