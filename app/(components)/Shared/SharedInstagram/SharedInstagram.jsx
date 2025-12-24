@@ -50,21 +50,35 @@ const SharedInstagram = ({ data_instagram }) => {
         {instagramData &&
           instagramData?.map((cur, i) => (
             <SwiperSlide key={i} className="h-full w-full">
-              <Link
-                href={`${cur?.link}`}
-                target="_blank"
-                className="flex h-full w-full  md:justify-center md:flex md:items-center"
-              >
-                <div className="rounded-[13px] overflow-hidden">
-                  <Image
-                    alt={i}
-                    src={`${process.env.NEXT_PUBLIC_PICTURE}/${cur?.image}`}
-                    width={1000}
-                    height={566}
-                    className="w-full lg:h-[300px] h-full object-contain "
-                  />
+              {cur?.link === null ? (
+                <div className="flex h-full w-full  md:justify-center md:flex md:items-center">
+                  <div className="rounded-[13px] overflow-hidden">
+                    <Image
+                      alt={i}
+                      src={`${process.env.NEXT_PUBLIC_PICTURE}/${cur?.image}`}
+                      width={1000}
+                      height={566}
+                      className="w-full lg:h-[300px] h-full object-contain "
+                    />
+                  </div>
                 </div>
-              </Link>
+              ) : (
+                <Link
+                  href={`${cur?.link}`}
+                  target="_blank"
+                  className="flex h-full w-full  md:justify-center md:flex md:items-center"
+                >
+                  <div className="rounded-[13px] overflow-hidden">
+                    <Image
+                      alt={i}
+                      src={`${process.env.NEXT_PUBLIC_PICTURE}/${cur?.image}`}
+                      width={1000}
+                      height={566}
+                      className="w-full lg:h-[300px] h-full object-contain "
+                    />
+                  </div>
+                </Link>
+              )}
             </SwiperSlide>
           ))}
       </Swiper>

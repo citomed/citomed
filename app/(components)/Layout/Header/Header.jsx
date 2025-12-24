@@ -77,7 +77,13 @@ const Header = ({ params, translate }) => {
       subMenu: null,
     },
     {
-      id: 7,
+      id: 5,
+      title: `${translate?.news}`,
+      href: `/xeberler`, // Sadəcə '/'
+      subMenu: null,
+    },
+    {
+      id: 6,
       title: `${translate?.contact}`,
       href: `/elaqe`,
       subMenu: null,
