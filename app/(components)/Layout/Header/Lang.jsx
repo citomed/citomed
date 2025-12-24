@@ -82,7 +82,7 @@ const Lang = ({ toggle, switchLang, langs, scrolledFromTop }) => {
             scrolledFromTop ? "text-[#fff]" : "text-[#000]"
           }`}
         >
-          <FaAngleDown className="w-[25px] h-[14px]" />
+          {/* <FaAngleDown className="w-[25px] h-[14px]" /> */}
         </p>
       </div>
       {switchLang && (

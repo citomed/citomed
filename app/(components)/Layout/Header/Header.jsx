@@ -125,7 +125,7 @@ const Header = ({ params, translate }) => {
   const langSwitcher = async () => {
     setOpen(false);
   };
-  const langs = ["az", "en"];
+  const langs = ["az"];
 
   const langChecker = useCallback((lang = "az") => {
     if (typeof localStorage !== "undefined") {
